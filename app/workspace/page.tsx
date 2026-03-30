@@ -184,16 +184,17 @@ export default function WorkspacePage() {
       setInputValue("");
       setIsAiTyping(true);
 
-      if (activeProjectId) {
-        await saveMessagesAction(activeProjectId, [{
-          id: userMsg.id,
-          project_id: activeProjectId,
-          role: "user",
-          sender_type: "user",
-          content: userMsg.content,
-          created_at: new Date().toISOString()
-        }]);
-      }
+       if (activeProjectId) {
+         // Fire-and-forget: don't await to prevent blocking if Supabase is slow
+         saveMessagesAction(activeProjectId, [{
+           id: userMsg.id,
+           project_id: activeProjectId,
+           role: "user",
+           sender_type: "user",
+           content: userMsg.content,
+           created_at: new Date().toISOString()
+         }]).catch(console.error);
+       }
 
       try {
         const res = await fetch("/api/chat", {
@@ -217,16 +218,17 @@ export default function WorkspacePage() {
         const updatedMsgs = [...allMsgs, aiMsg];
         setMessages(updatedMsgs);
 
-        if (activeProjectId) {
-          await saveMessagesAction(activeProjectId, [{
-            id: aiMsg.id,
-            project_id: activeProjectId,
-            role: "assistant",
-            sender_type: "orchestrator",
-            content: aiMsg.content,
-            created_at: new Date().toISOString()
-          }]);
-        }
+         if (activeProjectId) {
+           // Fire-and-forget: don't await to prevent blocking if Supabase is slow
+           saveMessagesAction(activeProjectId, [{
+             id: aiMsg.id,
+             project_id: activeProjectId,
+             role: "assistant",
+             sender_type: "orchestrator",
+             content: aiMsg.content,
+             created_at: new Date().toISOString()
+           }]).catch(console.error);
+         }
 
         if (
           data.content.toLowerCase().includes("enough information") ||
