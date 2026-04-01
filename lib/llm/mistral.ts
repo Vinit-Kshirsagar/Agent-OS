@@ -27,7 +27,7 @@ export class MistralProvider implements LLMProvider {
     // FIX: AbortController timeout — was missing entirely before,
     // meaning hung requests would block until the 30s Next.js default killed them.
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
+    const timeout = setTimeout(() => controller.abort(), 6000);
 
     try {
       const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
@@ -60,7 +60,7 @@ export class MistralProvider implements LLMProvider {
       // FIX: Was using err: any which bypasses type safety.
       // Check for AbortError explicitly via the name property.
       if (err instanceof Error && err.name === "AbortError") {
-        throw new Error("Mistral request timed out after 25 seconds");
+        throw new Error("Mistral request timed out after 6 seconds");
       }
       throw err;
     } finally {
@@ -70,7 +70,7 @@ export class MistralProvider implements LLMProvider {
 
   async chatJSON<T>(messages: LLMMessage[]): Promise<T> {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
+    const timeout = setTimeout(() => controller.abort(), 6000);
 
     try {
       const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
@@ -106,7 +106,7 @@ export class MistralProvider implements LLMProvider {
       }
     } catch (err: unknown) {
       if (err instanceof Error && err.name === "AbortError") {
-        throw new Error("Mistral request timed out after 25 seconds");
+        throw new Error("Mistral request timed out after 6 seconds");
       }
       throw err;
     } finally {

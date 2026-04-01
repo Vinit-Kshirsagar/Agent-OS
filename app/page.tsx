@@ -1,47 +1,22 @@
-'TYPESCRIPT'
-// =============================================================================
-// Agent OS — Main Workspace Page (thin shell)
-// =============================================================================
-// This file only composes components.
-// All state lives in useWorkspace (via useReducer) + useProject.
-// All API calls live in features/{chat,pipeline,project}/services.
-
 "use client";
 
-import { Suspense, useCallback } from "react";
-import { useProject } from "@/features/workspace/hooks/useProject";
-import { useWorkspace } from "@/features/workspace/hooks/useWorkspace";
-import { Header } from "@/features/workspace/components/Header";
-import { Sidebar } from "@/features/workspace/components/Sidebar";
-import { IdeaInput } from "@/features/workspace/components/IdeaInput";
-import { ChatPanel } from "@/features/workspace/components/ChatPanel";
-import { BriefPanel } from "@/features/workspace/components/BriefPanel";
-import type { LoadedProjectContext } from "@/features/workspace/hooks/useProject";
-
-function WorkspaceInner() {
-  const {
-    projectId,
-    setProjectId,
-    pastProjects,
-    isLoadingHistory,
-    loadProjectHistoricalData,
-  } = useProject();
-
-  const ws = useWorkspace(projectId, setProjectId);
-  const { state } = ws;
-
-  // FIX: handleSelectProject now receives the full LoadedProjectContext
-  // and passes it straight to loadProjectContext — no partial data.
-  const handleSelectProject = useCallback(
-    (id: string, idea: string) => {
-      loadProjectHistoricalData(
-        id,
-        idea,
-        (ctx: LoadedProjectContext) => ws.loadProjectContext(ctx)
-      );
-    },
-    [loadProjectHistoricalData, ws.loadProjectContext]
-  );
+import React, { useState } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight,
+  ChevronRight,
+  ShieldCheck,
+  Zap,
+  Layout,
+  Terminal as TerminalIcon,
+  Cpu,
+  Globe,
+  MessageSquare,
+  BarChart3,
+  ArrowDown
+} from "lucide-react";
+import dynamic from "next/dynamic";
 
 // Premium Dynamic Components
 const AgentOSTitle = dynamic(() => import("@/components/AgentOSTitle"), { ssr: false });
@@ -49,70 +24,13 @@ const AgentOSOrb = dynamic(() => import("@/components/AgentOSOrb"), { ssr: false
 const AgentOSWorkspaceMock = dynamic(() => import("@/components/AgentOSWorkspaceMock"), { ssr: false });
 const MultiAgentFlow = dynamic(() => import("@/components/MultiAgentFlow"), { ssr: false });
 
-  return (
-    <div className="h-screen flex flex-col">
-      <Header phase={state.phase} onNewProject={ws.handleNewProject} />
+// Refined Local Components
+import ThemeToggle from "@/components/ThemeToggle";
+import FeatureCards from "@/components/FeatureCards";
+import ComparisonTable from "@/components/ComparisonTable";
 
-      <div className="flex-1 flex overflow-hidden">
-        {state.phase === "idea" && (
-          <IdeaInput
-            rawIdea={state.rawIdea}
-            onIdeaChange={(val) =>
-              ws.dispatch({ type: "SET_RAW_IDEA", payload: val })
-            }
-            onSubmit={ws.handleStartProject}
-            onKeyDown={ws.handleKeyDown}
-            pastProjects={pastProjects}
-            isLoadingHistory={isLoadingHistory}
-            onSelectProject={handleSelectProject}
-          />
-        )}
-
-        {isActivePhase && (
-          <>
-            <Sidebar
-              state={state}
-              dispatch={ws.dispatch}
-              phase={state.phase}
-              pastProjects={pastProjects}
-              onNewProject={ws.handleNewProject}
-              onSelectProject={handleSelectProject}
-              onGenerateNow={ws.handleGenerateNow}
-              onRegenerate={ws.handleRegenerate}
-              onRetryPipeline={ws.handleRetryPipeline}
-              onFeedbackSubmit={ws.handleFeedbackSubmit}
-            />
-            <ChatPanel
-              messages={state.messages}
-              isAiTyping={state.loading.chat}
-              phase={state.phase}
-              inputValue={state.inputValue}
-              onInputChange={(val) =>
-                ws.dispatch({ type: "SET_INPUT_VALUE", payload: val })
-              }
-              onKeyDown={ws.handleKeyDown}
-              onSend={ws.handleSendChat}
-              onRetry={ws.handleRetryPipeline}
-            />
-            <BriefPanel
-              phase={state.phase}
-              pipelineResult={state.pipelineResult}
-              finalMarkdown={state.finalMarkdown}
-              activeTab={state.activeTab}
-              copied={state.copied}
-              onTabChange={(tab) =>
-                ws.dispatch({ type: "SET_ACTIVE_TAB", payload: tab })
-              }
-              onCopy={ws.handleCopy}
-              onExport={ws.handleExport}
-              onRegenerate={ws.handleRegenerate}
-            />
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
+export default function LandingPage() {
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-500 font-sans selection:bg-primary/20 selection:text-primary">
@@ -134,8 +52,8 @@ const MultiAgentFlow = dynamic(() => import("@/components/MultiAgentFlow"), { ss
 
           <div className="flex items-center gap-4">
              <ThemeToggle />
-             <Link 
-               href="/workspace" 
+             <Link
+               href="/workspace"
                className="px-6 py-2.5 rounded-full bg-primary text-white text-[12px] font-bold uppercase tracking-widest hover:bg-accent/90 hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,212,255,0.2)]"
              >
                Explore OS
@@ -152,7 +70,7 @@ const MultiAgentFlow = dynamic(() => import("@/components/MultiAgentFlow"), { ss
         <div className="container relative z-10 mx-auto px-6 max-w-7xl flex flex-col items-center text-center">
            <AgentOSTitle />
            
-           <motion.div 
+           <motion.div
              initial={{ opacity: 0 }}
              animate={{ opacity: 1 }}
              transition={{ delay: 1.5, duration: 1.2 }}
@@ -163,8 +81,8 @@ const MultiAgentFlow = dynamic(() => import("@/components/MultiAgentFlow"), { ss
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-6 justify-center">
-                 <Link 
-                   href="/workspace" 
+                 <Link
+                   href="/workspace"
                    className="group relative px-10 py-4 rounded-full bg-white text-black font-bold uppercase text-xs tracking-[0.2em] overflow-hidden hover:scale-105 active:scale-95 transition-all shadow-2xl"
                  >
                    <span className="relative z-10 flex items-center gap-2 text-black">Initialize Workspace <ArrowRight className="size-4" /></span>
@@ -182,8 +100,8 @@ const MultiAgentFlow = dynamic(() => import("@/components/MultiAgentFlow"), { ss
            <AgentOSOrb />
         </div>
 
-        <motion.div 
-            animate={{ y: [0, 8, 0] }} 
+        <motion.div
+            animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
             className="mt-12 text-muted-foreground"
           >

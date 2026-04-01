@@ -59,15 +59,16 @@ function WorkspaceInner() {
         {isActivePhase && (
           <>
             <Sidebar
+              state={state}
+              dispatch={ws.dispatch}
               phase={state.phase}
-              projectId={state.projectId}
               pastProjects={pastProjects}
-              agentStatuses={state.agentStatuses}
-              messageCount={state.messages.length}
               onNewProject={ws.handleNewProject}
               onSelectProject={handleSelectProject}
               onGenerateNow={ws.handleGenerateNow}
+              onRegenerate={ws.handleRegenerate}
               onRetryPipeline={ws.handleRetryPipeline}
+              onFeedbackSubmit={ws.handleFeedbackSubmit}
             />
             <ChatPanel
               messages={state.messages}

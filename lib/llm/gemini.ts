@@ -38,7 +38,7 @@ export class GeminiProvider implements LLMProvider {
         }));
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 25000);
+        const timeout = setTimeout(() => controller.abort(), 6000);
 
         try {
             const res = await fetch(
@@ -72,7 +72,7 @@ export class GeminiProvider implements LLMProvider {
             return { content, provider: "gemini" };
         } catch (err: unknown) {
             if (err instanceof Error && err.name === "AbortError") {
-                throw new Error("Gemini request timed out after 25 seconds");
+                throw new Error("Gemini request timed out after 6 seconds");
             }
             throw err;
         } finally {
@@ -91,7 +91,7 @@ export class GeminiProvider implements LLMProvider {
         }));
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 25000);
+        const timeout = setTimeout(() => controller.abort(), 6000);
 
         try {
             const res = await fetch(
@@ -132,7 +132,7 @@ export class GeminiProvider implements LLMProvider {
             }
         } catch (err: unknown) {
             if (err instanceof Error && err.name === "AbortError") {
-                throw new Error("Gemini request timed out after 25 seconds");
+                throw new Error("Gemini request timed out after 6 seconds");
             }
             throw err;
         } finally {

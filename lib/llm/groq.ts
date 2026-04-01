@@ -27,7 +27,7 @@ export class GroqProvider implements LLMProvider {
 
     async chat(messages: LLMMessage[]): Promise<LLMResponse> {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 25000);
+        const timeout = setTimeout(() => controller.abort(), 6000);
 
         try {
             const res = await fetch(
@@ -60,7 +60,7 @@ export class GroqProvider implements LLMProvider {
             };
         } catch (err: unknown) {
             if (err instanceof Error && err.name === "AbortError") {
-                throw new Error("Groq request timed out after 25 seconds");
+                throw new Error("Groq request timed out after 6 seconds");
             }
             throw err;
         } finally {
@@ -70,7 +70,7 @@ export class GroqProvider implements LLMProvider {
 
     async chatJSON<T>(messages: LLMMessage[]): Promise<T> {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 25000);
+        const timeout = setTimeout(() => controller.abort(), 6000);
 
         try {
             const res = await fetch(
@@ -109,7 +109,7 @@ export class GroqProvider implements LLMProvider {
             }
         } catch (err: unknown) {
             if (err instanceof Error && err.name === "AbortError") {
-                throw new Error("Groq request timed out after 25 seconds");
+                throw new Error("Groq request timed out after 6 seconds");
             }
             throw err;
         } finally {
